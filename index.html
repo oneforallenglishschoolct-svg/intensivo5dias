@@ -1401,6 +1401,14 @@
         };
       }
 
+      let trackDebounceTimer = null;
+      window.triggerLiveTrack = function(delay = 400) {
+        clearTimeout(trackDebounceTimer);
+        trackDebounceTimer = setTimeout(() => {
+          trackFunnel({ stageReached: window.currentStep || 1 });
+        }, delay);
+      };
+
       async function trackFunnel(extraData = {}) {
         try {
           const currentData = getCurrentFormData();
@@ -1792,6 +1800,28 @@
       // Initial page load setup
       document.addEventListener('DOMContentLoaded', () => {
         safeLucide();
+
+        // Setup real-time input tracking as soon as user types or selects anything
+        ['heroNome', 'heroWhatsapp', 'heroEmail', 'heroOrigemOutro'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('input', () => window.triggerLiveTrack(300));
+          }
+        });
+
+        ['heroIdiomaFoco', 'heroNivel', 'heroExperiencia', 'heroObjetivo', 'heroOrigem'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('change', () => window.triggerLiveTrack(0));
+          }
+        });
+
+        document.querySelectorAll('input[name="hero_plano"], input[name="hero_dias"]').forEach(el => {
+          el.addEventListener('change', () => window.triggerLiveTrack(0));
+        });
+
+        // Trigger immediate tracking ping for session initialization
+        window.triggerLiveTrack(100);
 
         // Direct button event listeners for maximum reliability
         const btnStep1Next = document.getElementById('btnStep1Next');
