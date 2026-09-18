@@ -1,5 +1,13 @@
 name = "intensivo5dias"
+main = "src/worker.js"
 compatibility_date = "2024-09-01"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "LEADS_KV"
+id = "COLE_O_ID_DO_KV_AQUI"
+
+
