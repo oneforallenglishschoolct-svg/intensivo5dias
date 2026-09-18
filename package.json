@@ -4,6 +4,7 @@
   "description": "Semana Intensiva One For All - Workshop de 5 dias",
   "scripts": {
     "dev": "node server.js",
+    "build": "node -e \"const fs = require('fs'); if (!fs.existsSync('dist')) fs.mkdirSync('dist'); fs.copyFileSync('index.html', 'dist/index.html'); console.log('Build completed successfully!');\"",
     "start": "node server.js",
     "preview": "node server.js"
   },
