@@ -1,0 +1,13 @@
+{
+  "name": "semana-intensiva-one4all",
+  "version": "1.0.0",
+  "description": "Semana Intensiva One For All - Workshop de 5 dias",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "preview": "node server.js"
+  },
+  "keywords": [],
+  "author": "One For All",
+  "license": "ISC"
+}
