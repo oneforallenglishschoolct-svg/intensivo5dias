@@ -334,11 +334,12 @@
                 <div class="font-bold text-[#CC2B4A] text-xs">${l.plano || 'Passaporte 5 Dias'}</div>
                 <div class="text-[10px] text-[#1E191B]/60 font-semibold">${l.valor || 'R$ 49,90'}</div>
               </td>
-              <td class="p-3.5 text-[11px] leading-tight text-[#1E191B]/80">
-                ${l.idiomaFoco ? `<div><strong>Foco:</strong> ${l.idiomaFoco}</div>` : ''}
-                ${l.nivel ? `<div><strong>Nível:</strong> ${l.nivel}</div>` : ''}
-                ${l.objetivo ? `<div><strong>Objetivo:</strong> ${l.objetivo}</div>` : ''}
-                ${!l.idiomaFoco && !l.nivel ? '<span class="text-gray-400 italic">Sem diagnóstico</span>' : ''}
+              <td class="p-3.5 text-[11px] leading-tight text-[#1E191B]/80 space-y-0.5">
+                ${l.idiomaFoco ? `<div><span class="text-[#CC2B4A] font-bold">Foco:</span> ${l.idiomaFoco}</div>` : ''}
+                ${l.nivel ? `<div><span class="text-[#1E191B]/70 font-bold">Nível:</span> ${l.nivel}</div>` : ''}
+                ${l.experiencia ? `<div><span class="text-[#1E191B]/70 font-bold">Histórico:</span> ${l.experiencia}</div>` : ''}
+                ${l.objetivo ? `<div><span class="text-[#1E191B]/70 font-bold">Objetivo:</span> ${l.objetivo}</div>` : ''}
+                ${!l.idiomaFoco && !l.nivel && !l.experiencia && !l.objetivo ? '<span class="text-gray-400 italic">Preenchendo perfil...</span>' : ''}
               </td>
               <td class="p-3.5 text-xs font-semibold whitespace-nowrap">
                 <span class="bg-[#1E191B]/10 px-2 py-0.5 rounded-md text-[10px] font-bold">${l.origem || 'Direto'}</span>

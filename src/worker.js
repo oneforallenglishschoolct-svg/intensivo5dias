@@ -40,22 +40,35 @@ export default {
           (payload.whatsapp && l.whatsapp && payload.whatsapp.replace(/\D/g, '') === l.whatsapp.replace(/\D/g, ''))
         );
 
+        const existingLead = existingIndex >= 0 ? leads[existingIndex] : {};
         const inputStage = payload.stageReached || 1;
 
-        const updatedLead = {
-          sessionId,
-          lastUpdated: now,
-          createdAt: existingIndex >= 0 ? (leads[existingIndex].createdAt || now) : now,
-          stageReached: inputStage,
-          ...(existingIndex >= 0 ? leads[existingIndex] : {}),
-          ...payload,
+        // Helper to preserve non-empty field values
+        const preserve = (key) => {
+          const val = payload[key];
+          if (val !== undefined && val !== null && val !== '') return val;
+          return existingLead[key] || '';
         };
 
-        if (existingIndex >= 0 && leads[existingIndex].stageReached > inputStage) {
-          updatedLead.stageReached = leads[existingIndex].stageReached;
-        } else if (inputStage > (updatedLead.stageReached || 0)) {
-          updatedLead.stageReached = inputStage;
-        }
+        const updatedLead = {
+          ...existingLead,
+          ...payload,
+          sessionId,
+          createdAt: existingLead.createdAt || now,
+          lastUpdated: now,
+          stageReached: Math.max(existingLead.stageReached || 1, inputStage || 1),
+          // Explicit non-destructive merges for all diagnostic and lead fields
+          nome: preserve('nome'),
+          whatsapp: preserve('whatsapp'),
+          email: preserve('email'),
+          idiomaFoco: preserve('idiomaFoco'),
+          nivel: preserve('nivel'),
+          experiencia: preserve('experiencia'),
+          objetivo: preserve('objetivo'),
+          origem: preserve('origem'),
+          plano: preserve('plano'),
+          valor: preserve('valor'),
+        };
 
         if (existingIndex >= 0) {
           leads[existingIndex] = updatedLead;
