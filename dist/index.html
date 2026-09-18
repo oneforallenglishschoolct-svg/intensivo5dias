@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <title>Semana Intensiva One For All | Workshop de 5 Dias de Inglês & Espanhol</title>
     <meta name="description" content="Workshop exclusivo de 5 dias de Inglês e Espanhol com Stranger Things, La Casa de Papel, Camp Rock, Soy Luna e O Diabo Veste Prada. De 26 a 30/09. 1º Lote por apenas R$ 24,90 (1 dia) ou R$ 49,90 (5 dias)!" />
+    <link rel="canonical" href="https://intensivo.oneforallschool.com/" />
+    <meta property="og:title" content="Semana Intensiva One For All | Pop Culture Language Workshop" />
+    <meta property="og:description" content="Aprenda inglês e espanhol com séries e filmes icônicos da cultura pop. 1º Lote R$ 24,90 / R$ 49,90." />
+    <meta property="og:url" content="https://intensivo.oneforallschool.com/" />
+    <meta property="og:type" content="website" />
 
     <!-- Google Fonts Exatas de one-for-all---cursos-de-inglês -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1333,18 +1337,102 @@
       // PAYMENT & PIX CONFIGURATION
       // ==========================================
       const ASAAS_CONFIG = {
-        // Links de Pagamento Cartão Asaas (gerados no Painel do Asaas)
         checkoutUrl5Dias: "https://www.asaas.com/c/oneforall-semana-5dias",
         checkoutUrl1Dia: "https://www.asaas.com/c/oneforall-semana-1dia",
-        
-        // Chave PIX do Titular / Banco
         pixChave: "0c5cdc5b-0192-410e-a19f-a1509d7efa3a",
         pixBeneficiario: "ONE FOR ALL ENGLISH SCHOOL",
         pixCidade: "SAO PAULO",
-        
-        // Modo de redirecionamento para Cartão: 'modal' ou 'redirect'
         cardMode: 'modal' 
       };
+
+      // ==========================================
+      // SESSION & DATABASE TRACKING SYSTEM
+      // ==========================================
+      function getSessionId() {
+        let sid = localStorage.getItem('ofa_session_id');
+        if (!sid) {
+          sid = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+          localStorage.setItem('ofa_session_id', sid);
+        }
+        return sid;
+      }
+
+      function getCurrentFormData() {
+        const is5Dias = document.getElementById('heroPlano5Dias')?.checked;
+        let plano = 'Passaporte 5 Dias Completo (1º Lote)';
+        let valor = 'R$ 49,90';
+        let valorNum = 49.90;
+
+        if (!is5Dias) {
+          const checkboxes = document.querySelectorAll('input[name="hero_dias"]:checked');
+          const count = checkboxes.length;
+          if (count > 0) {
+            const dias = Array.from(checkboxes).map(c => c.value).join(', ');
+            const total = (count >= 5) ? 49.90 : (count * 24.90);
+            valorNum = total;
+            plano = `Avulso 1º Lote (${count} dia${count > 1 ? 's' : ''}): ${dias}`;
+            valor = `R$ ${total.toFixed(2).replace('.', ',')}`;
+          } else {
+            plano = 'Passaporte Avulso (Nenhum dia marcado)';
+            valor = 'R$ 0,00';
+            valorNum = 0;
+          }
+        }
+
+        const origemSelect = document.getElementById('heroOrigem')?.value || '';
+        const origemOutro = document.getElementById('heroOrigemOutro') ? document.getElementById('heroOrigemOutro').value.trim() : '';
+        const origemFinal = (origemSelect === 'Outro' && origemOutro) ? `Outro (${origemOutro})` : origemSelect;
+
+        return {
+          sessionId: getSessionId(),
+          plano,
+          valor,
+          valorNum,
+          idiomaFoco: document.getElementById('heroIdiomaFoco')?.value || '',
+          nivel: document.getElementById('heroNivel')?.value || '',
+          experiencia: document.getElementById('heroExperiencia')?.value || '',
+          objetivo: document.getElementById('heroObjetivo')?.value || '',
+          nome: document.getElementById('heroNome')?.value.trim() || '',
+          whatsapp: document.getElementById('heroWhatsapp')?.value.trim() || '',
+          email: document.getElementById('heroEmail')?.value.trim() || '',
+          origem: origemFinal || 'Direto',
+          url: window.location.href,
+          timestamp: new Date().toISOString()
+        };
+      }
+
+      async function trackFunnel(extraData = {}) {
+        try {
+          const currentData = getCurrentFormData();
+          const payload = { ...currentData, ...extraData };
+
+          // 1. Salva no localStorage como backup local imediato
+          let localBackup = [];
+          try {
+            const raw = localStorage.getItem('ofa_leads_backup');
+            localBackup = raw ? JSON.parse(raw) : [];
+          } catch(e) {}
+
+          const idx = localBackup.findIndex(l => l.sessionId === payload.sessionId || (payload.whatsapp && l.whatsapp && payload.whatsapp === l.whatsapp));
+          if (idx >= 0) {
+            localBackup[idx] = { ...localBackup[idx], ...payload };
+          } else {
+            localBackup.unshift(payload);
+          }
+          localStorage.setItem('ofa_leads_backup', JSON.stringify(localBackup));
+
+          // 2. Dispara requisição assíncrona para o backend / Cloudflare
+          fetch('/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(err => console.debug('Track ping notice:', err));
+
+        } catch (err) {
+          console.warn('Funnel tracking notice:', err);
+        }
+      }
 
       // Current Step Tracker
       window.currentStep = 1;
@@ -1363,6 +1451,11 @@
               return;
             }
           }
+          trackFunnel({ stageReached: 1 });
+        }
+
+        if (stepNumber === 3) {
+          trackFunnel({ stageReached: 2 });
         }
 
         const s1 = document.getElementById('step1');
@@ -1557,6 +1650,8 @@
           pixInput.setSelectionRange(0, 99999);
           navigator.clipboard.writeText(pixInput.value);
 
+          trackFunnel({ stageReached: 4, pixCopied: true });
+
           const btn = document.getElementById('btnCopyPix');
           if (btn) {
             btn.textContent = 'COPIADO! ✅';
@@ -1622,6 +1717,22 @@
             valor = `R$ ${total.toFixed(2).replace('.', ',')}`;
           }
 
+          // Rastreia lead na etapa 3 (contato preenchido & modal aberto)
+          trackFunnel({
+            stageReached: 3,
+            nome,
+            whatsapp,
+            email,
+            idiomaFoco,
+            nivel,
+            experiencia,
+            objetivo,
+            origem: origemFinal,
+            plano,
+            valor,
+            valorNum
+          });
+
           // Mensagem rica para o WhatsApp com todos os dados
           const msg = `Olá One For All! Acabei de me inscrever na *Semana Intensiva (26 a 30/09)* no *1º Lote* com pagamento via *PIX*!%0A%0A` +
             `👤 *Nome:* ${encodeURIComponent(nome)}%0A` +
@@ -1640,7 +1751,12 @@
 
           const waUrl = `https://wa.me/5511924829761?text=${msg}`;
           const waBtn = document.getElementById('asaasWaLink');
-          if (waBtn) waBtn.setAttribute('href', waUrl);
+          if (waBtn) {
+            waBtn.setAttribute('href', waUrl);
+            waBtn.onclick = () => {
+              trackFunnel({ stageReached: 5, whatsappClicked: true });
+            };
+          }
 
           // Preenche dados do Modal
           const modalAluno = document.getElementById('asaasModalAluno');

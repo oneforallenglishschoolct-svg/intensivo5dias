@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <title>Painel de Leads & Funil | Semana Intensiva One For All</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              carvao: '#1E191B',
+              creme: '#F3E9C9',
+              framboesa: '#CC2B4A',
+              rosa: '#FF739B',
+              lima: '#CBCE4D',
+              laranja: '#E58A2A',
+              azul: '#7A9BC2',
+              musgo: '#4A6B2F',
+            },
+            fontFamily: {
+              sans: ['Plus Jakarta Sans', 'sans-serif'],
+              heading: ['Montserrat', 'Syne', 'sans-serif'],
+              heavy: ['Montserrat', 'Syne', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #F3E9C9;
+        color: #1E191B;
+      }
+      .font-heavy {
+        font-family: 'Montserrat', 'Syne', sans-serif;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+      }
+      .pop-shadow-sm { box-shadow: 2px 2px 0px #1E191B; }
+      .pop-shadow { box-shadow: 3px 3px 0px #1E191B; }
+      .pop-shadow-md { box-shadow: 4px 4px 0px #1E191B; }
+      .pop-shadow-lg { box-shadow: 6px 6px 0px #1E191B; }
+    </style>
+  </head>
+  <body class="min-h-screen bg-[#F3E9C9] text-[#1E191B] p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Top Navigation Header -->
+      <header class="bg-[#1E191B] text-[#F3E9C9] p-4 sm:p-6 rounded-3xl border-3 border-[#1E191B] pop-shadow-lg mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="https://i.ibb.co/1JqV5RdT/Design-sem-nome-12.png" alt="Logo" class="h-10 w-auto object-contain bg-white p-1 rounded-xl" />
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-heavy text-lg sm:text-xl uppercase tracking-wider text-white">Funil de Leads & Abandonos</h1>
+              <span class="bg-[#CBCE4D] text-[#1E191B] font-heavy text-[10px] px-2 py-0.5 rounded-full uppercase">Ao Vivo</span>
+            </div>
+            <p class="text-xs text-[#F3E9C9]/70 font-medium">Semana Intensiva One For All • intensivo.oneforallschool.com</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 w-full md:w-auto">
+          <button
+            onclick="loadLeads()"
+            class="px-4 py-2.5 bg-[#CBCE4D] hover:bg-[#E58A2A] text-[#1E191B] font-heavy text-xs uppercase rounded-xl border-2 border-[#1E191B] pop-shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Atualizar</span>
+          </button>
+          <button
+            onclick="exportCSV()"
+            class="px-4 py-2.5 bg-white hover:bg-gray-100 text-[#1E191B] font-heavy text-xs uppercase rounded-xl border-2 border-[#1E191B] pop-shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Exportar CSV</span>
+          </button>
+          <a
+            href="/"
+            target="_blank"
+            class="px-4 py-2.5 bg-[#CC2B4A] hover:bg-rose-700 text-white font-heavy text-xs uppercase rounded-xl border-2 border-[#1E191B] pop-shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>Ver Landing Page</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- KPI Metric Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+        
+        <!-- Total Leads -->
+        <div class="bg-white p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow">
+          <div class="flex items-center justify-between text-xs font-bold text-[#1E191B]/70 mb-1">
+            <span>Total Visitantes/Leads</span>
+            <i data-lucide="users" class="w-4 h-4 text-[#CC2B4A]"></i>
+          </div>
+          <div id="statTotal" class="text-2xl sm:text-3xl font-heavy text-[#1E191B]">0</div>
+          <span class="text-[10px] text-[#1E191B]/60 font-semibold">Sessões monitoradas</span>
+        </div>
+
+        <!-- Etapa 1 -->
+        <div class="bg-white p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow">
+          <div class="flex items-center justify-between text-xs font-bold text-[#1E191B]/70 mb-1">
+            <span>Etapa 1 (Plano)</span>
+            <i data-lucide="ticket" class="w-4 h-4 text-[#E58A2A]"></i>
+          </div>
+          <div id="statStep1" class="text-2xl sm:text-3xl font-heavy text-[#E58A2A]">0</div>
+          <span class="text-[10px] text-[#1E191B]/60 font-semibold">Escolheram passaporte</span>
+        </div>
+
+        <!-- Etapa 2 -->
+        <div class="bg-white p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow">
+          <div class="flex items-center justify-between text-xs font-bold text-[#1E191B]/70 mb-1">
+            <span>Etapa 2 (Perfil)</span>
+            <i data-lucide="clipboard-check" class="w-4 h-4 text-[#7A9BC2]"></i>
+          </div>
+          <div id="statStep2" class="text-2xl sm:text-3xl font-heavy text-[#7A9BC2]">0</div>
+          <span class="text-[10px] text-[#1E191B]/60 font-semibold">Preencheram diagnóstico</span>
+        </div>
+
+        <!-- Etapa 3 (Contato) -->
+        <div class="bg-white p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow">
+          <div class="flex items-center justify-between text-xs font-bold text-[#1E191B]/70 mb-1">
+            <span>Etapa 3 (Contato)</span>
+            <i data-lucide="phone-call" class="w-4 h-4 text-[#4A6B2F]"></i>
+          </div>
+          <div id="statStep3" class="text-2xl sm:text-3xl font-heavy text-[#4A6B2F]">0</div>
+          <span class="text-[10px] text-[#1E191B]/60 font-semibold">Nome + WhatsApp</span>
+        </div>
+
+        <!-- PIX / Finalizados -->
+        <div class="bg-[#CBCE4D] p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between text-xs font-heavy text-[#1E191B] mb-1">
+            <span>PIX Gerados</span>
+            <i data-lucide="zap" class="w-4 h-4 text-[#1E191B]"></i>
+          </div>
+          <div id="statPix" class="text-2xl sm:text-3xl font-heavy text-[#1E191B]">0</div>
+          <span class="text-[10px] text-[#1E191B]/80 font-bold">Inscrições Finalizadas</span>
+        </div>
+
+      </div>
+
+      <!-- Filter and Search Bar -->
+      <div class="bg-white p-4 rounded-2xl border-2 border-[#1E191B] pop-shadow mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <label class="text-xs font-heavy uppercase text-[#1E191B]">Filtrar:</label>
+          <select id="filterStage" onchange="filterLeads()" class="px-3 py-1.5 rounded-xl bg-[#F3E9C9]/50 border-2 border-[#1E191B]/20 text-xs font-bold focus:outline-none">
+            <option value="ALL">Todas as Etapas</option>
+            <option value="STEP3">Com Contato (Etapa 3 / PIX)</option>
+            <option value="ABANDON_STEP2">Abandonou na Etapa 2</option>
+            <option value="ABANDON_STEP1">Abandonou na Etapa 1</option>
+            <option value="PIX_COPIED">Copiaram o PIX</option>
+            <option value="WHATSAPP_CLICK">Clicaram no WhatsApp</option>
+          </select>
+        </div>
+
+        <div class="w-full sm:w-72">
+          <input
+            type="text"
+            id="searchQuery"
+            oninput="filterLeads()"
+            placeholder="Buscar por Nome, WhatsApp, E-mail..."
+            class="w-full px-3.5 py-1.5 rounded-xl bg-[#F3E9C9]/40 border-2 border-[#1E191B]/20 text-xs font-medium focus:outline-none focus:border-[#1E191B]"
+          />
+        </div>
+      </div>
+
+      <!-- Leads Table -->
+      <div class="bg-white rounded-3xl border-3 border-[#1E191B] pop-shadow-lg overflow-hidden">
+        
+        <div class="p-4 sm:p-5 bg-[#1E191B] text-[#F3E9C9] flex items-center justify-between border-b-2 border-[#1E191B]">
+          <h2 class="font-heavy text-sm sm:text-base uppercase tracking-wider text-white flex items-center gap-2">
+            <i data-lucide="list" class="w-4 h-4 text-[#CBCE4D]"></i>
+            <span>Histórico de Leads em Tempo Real</span>
+          </h2>
+          <span id="leadCountLabel" class="text-xs font-heavy bg-[#CBCE4D] text-[#1E191B] px-2.5 py-0.5 rounded-full uppercase">
+            0 Registros
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-[#1E191B]">
+            <thead class="bg-[#F3E9C9] border-b-2 border-[#1E191B] text-[11px] font-heavy uppercase tracking-wider text-[#1E191B]">
+              <tr>
+                <th class="p-3.5">Data/Hora</th>
+                <th class="p-3.5">Etapa / Status</th>
+                <th class="p-3.5">Aluno (Contato)</th>
+                <th class="p-3.5">Plano Escolhido</th>
+                <th class="p-3.5">Diagnóstico (Perfil)</th>
+                <th class="p-3.5">Origem</th>
+                <th class="p-3.5 text-center">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody" class="divide-y divide-[#1E191B]/15 font-medium">
+              <tr>
+                <td colspan="7" class="p-8 text-center text-[#1E191B]/60 font-bold">
+                  Carregando dados dos leads...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Script de Gestão de Leads & Dashboard -->
+    <script>
+      let allLeads = [];
+
+      async function loadLeads() {
+        try {
+          // Tenta carregar do backend local/Cloudflare
+          const res = await fetch('/api/leads?t=' + Date.now());
+          if (res.ok) {
+            allLeads = await res.json();
+          } else {
+            // Fallback para localStorage local se API não estiver ativa
+            const localData = localStorage.getItem('ofa_leads_backup');
+            allLeads = localData ? JSON.parse(localData) : [];
+          }
+        } catch (e) {
+          console.warn('Usando base local de backup:', e);
+          const localData = localStorage.getItem('ofa_leads_backup');
+          allLeads = localData ? JSON.parse(localData) : [];
+        }
+
+        renderDashboard(allLeads);
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function renderDashboard(leads) {
+        // Atualiza contadores
+        const total = leads.length;
+        const step1 = leads.filter(l => l.stageReached >= 1).length;
+        const step2 = leads.filter(l => l.stageReached >= 2).length;
+        const step3 = leads.filter(l => l.stageReached >= 3 || l.nome || l.whatsapp).length;
+        const pix = leads.filter(l => l.pixCopied || l.stageReached >= 4).length;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statStep1').textContent = step1;
+        document.getElementById('statStep2').textContent = step2;
+        document.getElementById('statStep3').textContent = step3;
+        document.getElementById('statPix').textContent = pix;
+
+        filterLeads();
+      }
+
+      function filterLeads() {
+        const stageFilter = document.getElementById('filterStage').value;
+        const query = document.getElementById('searchQuery').value.toLowerCase().trim();
+
+        const filtered = allLeads.filter(l => {
+          // Stage filter
+          if (stageFilter === 'STEP3' && !(l.stageReached >= 3 || l.nome || l.whatsapp)) return false;
+          if (stageFilter === 'ABANDON_STEP1' && l.stageReached !== 1) return false;
+          if (stageFilter === 'ABANDON_STEP2' && (l.stageReached !== 2 || l.nome)) return false;
+          if (stageFilter === 'PIX_COPIED' && !l.pixCopied) return false;
+          if (stageFilter === 'WHATSAPP_CLICK' && !l.whatsappClicked) return false;
+
+          // Search query
+          if (query) {
+            const str = `${l.nome || ''} ${l.whatsapp || ''} ${l.email || ''} ${l.plano || ''} ${l.origem || ''}`.toLowerCase();
+            if (!str.includes(query)) return false;
+          }
+
+          return true;
+        });
+
+        renderTable(filtered);
+      }
+
+      function renderTable(leads) {
+        const tbody = document.getElementById('leadsTableBody');
+        document.getElementById('leadCountLabel').textContent = `${leads.length} Registro${leads.length === 1 ? '' : 's'}`;
+
+        if (leads.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="p-8 text-center text-[#1E191B]/60 font-bold">
+                Nenhum lead encontrado para este filtro.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = leads.map(l => {
+          const dateStr = l.timestamp ? new Date(l.timestamp).toLocaleString('pt-BR') : '-';
+          
+          let stageBadge = '';
+          if (l.whatsappClicked) {
+            stageBadge = '<span class="bg-[#25D366] text-white text-[10px] font-heavy px-2 py-0.5 rounded-full">💬 WhatsApp Enviado</span>';
+          } else if (l.pixCopied) {
+            stageBadge = '<span class="bg-[#CBCE4D] text-[#1E191B] text-[10px] font-heavy px-2 py-0.5 rounded-full">⚡ PIX Copiado</span>';
+          } else if (l.stageReached >= 3 || (l.nome && l.whatsapp)) {
+            stageBadge = '<span class="bg-[#4A6B2F] text-white text-[10px] font-heavy px-2 py-0.5 rounded-full">📝 Etapa 3 (Contato)</span>';
+          } else if (l.stageReached === 2) {
+            stageBadge = '<span class="bg-[#7A9BC2] text-white text-[10px] font-heavy px-2 py-0.5 rounded-full">🎯 Etapa 2 (Perfil)</span>';
+          } else {
+            stageBadge = '<span class="bg-[#E58A2A] text-white text-[10px] font-heavy px-2 py-0.5 rounded-full">🎟️ Etapa 1 (Plano)</span>';
+          }
+
+          const rawPhone = (l.whatsapp || '').replace(/\D/g, '');
+          const waPhone = rawPhone.length <= 11 ? '55' + rawPhone : rawPhone;
+          const recoveryMsg = encodeURIComponent(`Olá ${l.nome || 'tudo bem'}! Vi que você começou sua inscrição na Semana Intensiva One For All. Posso te ajudar a garantir sua vaga com 60% de desconto no 1º Lote?`);
+
+          return `
+            <tr class="hover:bg-[#F3E9C9]/30 transition-colors">
+              <td class="p-3.5 whitespace-nowrap text-[11px] text-[#1E191B]/70 font-semibold">${dateStr}</td>
+              <td class="p-3.5 whitespace-nowrap">${stageBadge}</td>
+              <td class="p-3.5">
+                <div class="font-heavy text-[#1E191B]">${l.nome || '<span class="text-gray-400 italic">Não preencheu</span>'}</div>
+                <div class="text-[11px] text-[#1E191B]/70">${l.whatsapp || ''}</div>
+                <div class="text-[10px] text-[#1E191B]/50">${l.email || ''}</div>
+              </td>
+              <td class="p-3.5">
+                <div class="font-bold text-[#CC2B4A] text-xs">${l.plano || 'Passaporte 5 Dias'}</div>
+                <div class="text-[10px] text-[#1E191B]/60 font-semibold">${l.valor || 'R$ 49,90'}</div>
+              </td>
+              <td class="p-3.5 text-[11px] leading-tight text-[#1E191B]/80">
+                ${l.idiomaFoco ? `<div><strong>Foco:</strong> ${l.idiomaFoco}</div>` : ''}
+                ${l.nivel ? `<div><strong>Nível:</strong> ${l.nivel}</div>` : ''}
+                ${l.objetivo ? `<div><strong>Objetivo:</strong> ${l.objetivo}</div>` : ''}
+                ${!l.idiomaFoco && !l.nivel ? '<span class="text-gray-400 italic">Sem diagnóstico</span>' : ''}
+              </td>
+              <td class="p-3.5 text-xs font-semibold whitespace-nowrap">
+                <span class="bg-[#1E191B]/10 px-2 py-0.5 rounded-md text-[10px] font-bold">${l.origem || 'Direto'}</span>
+              </td>
+              <td class="p-3.5 text-center whitespace-nowrap">
+                ${l.whatsapp ? `
+                  <a
+                    href="https://wa.me/${waPhone}?text=${recoveryMsg}"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-[10px] font-heavy uppercase rounded-lg border border-[#1E191B] pop-shadow-sm transition-all"
+                    title="Chamar no WhatsApp"
+                  >
+                    <span>Chamar</span>
+                    <i data-lucide="message-circle" class="w-3 h-3"></i>
+                  </a>
+                ` : '<span class="text-gray-400 text-[10px] italic">Sem telefone</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function exportCSV() {
+        if (allLeads.length === 0) {
+          alert('Não há dados para exportar.');
+          return;
+        }
+
+        const headers = ['Data', 'Status', 'Nome', 'WhatsApp', 'Email', 'Plano', 'Valor', 'Idioma_Foco', 'Nivel', 'Historico', 'Objetivo', 'Origem'];
+        const rows = allLeads.map(l => [
+          l.timestamp ? new Date(l.timestamp).toISOString() : '',
+          l.whatsappClicked ? 'WhatsApp Enviado' : l.pixCopied ? 'PIX Copiado' : l.stageReached >= 3 ? 'Etapa 3' : l.stageReached === 2 ? 'Etapa 2' : 'Etapa 1',
+          `"${(l.nome || '').replace(/"/g, '""')}"`,
+          `"${(l.whatsapp || '').replace(/"/g, '""')}"`,
+          `"${(l.email || '').replace(/"/g, '""')}"`,
+          `"${(l.plano || '').replace(/"/g, '""')}"`,
+          `"${(l.valor || '').replace(/"/g, '""')}"`,
+          `"${(l.idiomaFoco || '').replace(/"/g, '""')}"`,
+          `"${(l.nivel || '').replace(/"/g, '""')}"`,
+          `"${(l.experiencia || '').replace(/"/g, '""')}"`,
+          `"${(l.objetivo || '').replace(/"/g, '""')}"`,
+          `"${(l.origem || '').replace(/"/g, '""')}"`
+        ]);
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `leads_semana_intensiva_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Carrega os leads automaticamente ao abrir
+      document.addEventListener('DOMContentLoaded', () => {
+        loadLeads();
+        // Polling automático a cada 10 segundos
+        setInterval(loadLeads, 10000);
+      });
+    </script>
+  </body>
+</html>
