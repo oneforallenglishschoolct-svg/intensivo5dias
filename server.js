@@ -75,21 +75,41 @@ const server = http.createServer((req, res) => {
         const payload = JSON.parse(body || '{}');
         const leads = getLeads();
 
-        const sessionId = payload.sessionId || `sess_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        const existingIndex = leads.findIndex(l => l.sessionId === sessionId || (payload.whatsapp && l.whatsapp && payload.whatsapp === l.whatsapp));
-
         const now = new Date().toISOString();
-        const updatedLead = {
-          sessionId,
-          lastUpdated: now,
-          ...(existingIndex >= 0 ? leads[existingIndex] : { createdAt: now, stageReached: 1 }),
-          ...payload
+        const sessionId = payload.sessionId || `sess_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+
+        const existingIndex = leads.findIndex(l =>
+          l.sessionId === sessionId ||
+          (payload.whatsapp && l.whatsapp && payload.whatsapp.replace(/\D/g, '') === l.whatsapp.replace(/\D/g, ''))
+        );
+
+        const existingLead = existingIndex >= 0 ? leads[existingIndex] : {};
+        const inputStage = payload.stageReached || 1;
+
+        const preserve = (key) => {
+          const val = payload[key];
+          if (val !== undefined && val !== null && val !== '') return val;
+          return existingLead[key] || '';
         };
 
-        // Ensure highest stage reached is preserved
-        if (existingIndex >= 0 && leads[existingIndex].stageReached > (payload.stageReached || 1)) {
-          updatedLead.stageReached = leads[existingIndex].stageReached;
-        }
+        const updatedLead = {
+          ...existingLead,
+          ...payload,
+          sessionId,
+          createdAt: existingLead.createdAt || now,
+          lastUpdated: now,
+          stageReached: Math.max(existingLead.stageReached || 1, inputStage || 1),
+          nome: preserve('nome'),
+          whatsapp: preserve('whatsapp'),
+          email: preserve('email'),
+          idiomaFoco: preserve('idiomaFoco'),
+          nivel: preserve('nivel'),
+          experiencia: preserve('experiencia'),
+          objetivo: preserve('objetivo'),
+          origem: preserve('origem'),
+          plano: preserve('plano'),
+          valor: preserve('valor'),
+        };
 
         if (existingIndex >= 0) {
           leads[existingIndex] = updatedLead;
